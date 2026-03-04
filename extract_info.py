@@ -392,8 +392,7 @@ def build_c1(base: pd.DataFrame) -> pd.DataFrame:
         'adm_age', 'adm_gender', 'adm_race', 'adm_insurance', 'adm_marital_status',
         'adm_has_ed', 'adm_ed_los_hours',
         'adm_admission_type', 'adm_admission_location',
-        'adm_inhospital_mortality',   # label column — DO NOT use as feature
-    ]
+        'adm_inhospital_mortality', 'days_to_readmit', 'readmitted_30d', 'next_admittime']
     return df[keep]
 
 # ─────────────────────────────────────────────────────────────────────────────

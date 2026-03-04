@@ -265,12 +265,14 @@ class Preprocessor:
             parts.append(self.cat_scaler.fit_transform(
                 self.ord_enc.fit_transform(
                     self.cat_imp.fit_transform(Xc)).astype(np.float32)))
+            # Categorical imputer with constant strategy keeps all columns
             cols += self.cat_cols
         if self.num_cols:
             Xn = X[self.num_cols].apply(pd.to_numeric, errors='coerce')
             parts.append(self.num_scaler.fit_transform(
                 self.num_imp.fit_transform(Xn)).astype(np.float32))
-            cols += self.num_cols
+            # Numeric imputer may drop all-NaN columns - use get_feature_names_out to track
+            cols += list(self.num_imp.get_feature_names_out(self.num_cols))
         self.out_cols_ = cols
         return np.hstack(parts).astype(np.float32)
 
@@ -959,7 +961,7 @@ def write_report(results_df, dataset_info, feature_names, act_df, cn_model):
 
     report = "\n".join(lines)
     path   = os.path.join(OUTPUT_DIR, 'report.txt')
-    with open(path, 'w') as f:
+    with open(path, 'w', encoding='utf-8') as f:
         f.write(report)
     log.info(f"\n{report}\n")
     log.info(f"  Report saved: {path}")
