@@ -320,6 +320,13 @@ def load_base_tables() -> pd.DataFrame:
     base["adm_age"] = base["admittime"].dt.year - base["yob"]
     base.loc[base["anchor_age"] >= 91, "adm_age"] = 91
 
+    # calculate readmission BEFORE dropping any future admissions
+    base = base.sort_values(['subject_id', 'admittime']).copy()
+    base['next_admittime'] = base.groupby('subject_id')['admittime'].shift(-1)
+    base['days_to_readmit'] = (base['next_admittime'] - base['dischtime']).dt.total_seconds() / 86400.0
+    base['readmitted_30d'] = ((base['days_to_readmit'] > 0) & (base['days_to_readmit'] <= 30)).astype(int)
+    base.loc[base['hospital_expire_flag'] == 1, 'readmitted_30d'] = 0
+
     log.info(f"  Pre-filter cohort: {len(base):,} admissions")
     base = base[base['adm_age'] >= 18].copy()
     log.info(f"  After age>=18:            {len(base):,}")
