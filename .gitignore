@@ -13,8 +13,11 @@ model_outputs/
 .vscode/
 
 
-
+*.log
 
 
 _*/
 **/_*/
+
+pipeline_cache/
+catboost_info/
