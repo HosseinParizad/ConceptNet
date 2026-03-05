@@ -11,3 +11,10 @@ env.bak/
 venv.bak/
 model_outputs/
 .vscode/
+
+
+
+
+
+_*/
+**/_*/
